@@ -2,6 +2,8 @@
 
 A Hebrew RTL slideshow presenting how to build programmatic videos using [Remotion](https://remotion.dev) and [Claude Code](https://claude.ai/code).
 
+**[View the presentation live](https://booya1986.github.io/Remotion-Tutorial-Presentation/)**
+
 ## Quick Start
 
 Open `index.html` in any modern browser — no build step or server required.
