@@ -37,6 +37,84 @@ def set_slide_bg(slide, color=BG_COLOR):
     fill.solid()
     fill.fore_color.rgb = color
 
+    # ── Green radial blob (centred ellipse, ~12% green fading out) ──
+    blob_w = Emu(int(SLIDE_W * 0.7))
+    blob_h = Emu(int(SLIDE_H * 0.7))
+    blob_x = Emu(int((SLIDE_W - blob_w) / 2))
+    blob_y = Emu(int((SLIDE_H - blob_h) / 2))
+    blob = slide.shapes.add_shape(MSO_SHAPE.OVAL, blob_x, blob_y, blob_w, blob_h)
+    blob.line.fill.background()
+    # Gradient fill: green centre → transparent edge
+    fill_el = blob._element.spPr
+    # Remove default solid fill
+    for sf in fill_el.findall(qn("a:solidFill")):
+        fill_el.remove(sf)
+    grad = fill_el.makeelement(qn("a:gradFill"), {"rotWithShape": "1"})
+    gs_lst = grad.makeelement(qn("a:gsLst"), {})
+    # Stop 0%: green 12% opacity
+    gs0 = gs_lst.makeelement(qn("a:gs"), {"pos": "0"})
+    srgb0 = gs0.makeelement(qn("a:srgbClr"), {"val": "22C55E"})
+    srgb0.append(srgb0.makeelement(qn("a:alpha"), {"val": "12000"}))
+    gs0.append(srgb0)
+    gs_lst.append(gs0)
+    # Stop 40%: green 3% opacity
+    gs1 = gs_lst.makeelement(qn("a:gs"), {"pos": "40000"})
+    srgb1 = gs1.makeelement(qn("a:srgbClr"), {"val": "22C55E"})
+    srgb1.append(srgb1.makeelement(qn("a:alpha"), {"val": "3000"}))
+    gs1.append(srgb1)
+    gs_lst.append(gs1)
+    # Stop 100%: fully transparent
+    gs2 = gs_lst.makeelement(qn("a:gs"), {"pos": "100000"})
+    srgb2 = gs2.makeelement(qn("a:srgbClr"), {"val": "1B1B1B"})
+    srgb2.append(srgb2.makeelement(qn("a:alpha"), {"val": "0"}))
+    gs2.append(srgb2)
+    gs_lst.append(gs2)
+    grad.append(gs_lst)
+    # Path type = circle (radial)
+    path = grad.makeelement(qn("a:path"), {"path": "circle"})
+    fill_to_rect = path.makeelement(qn("a:fillToRect"),
+                                     {"l": "50000", "t": "50000",
+                                      "r": "50000", "b": "50000"})
+    path.append(fill_to_rect)
+    grad.append(path)
+    fill_el.append(grad)
+
+    # ── Grid lines (faint white stripes, 40px ≈ 0.42in cells) ──
+    cell = Inches(0.42)
+    line_thick = Emu(int(Pt(0.5)))
+    grid_color = RGBColor(0xFF, 0xFF, 0xFF)
+    # Vertical lines
+    x = Emu(0)
+    while x < SLIDE_W:
+        ln = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, Emu(0),
+                                     line_thick, SLIDE_H)
+        ln.fill.solid()
+        ln.fill.fore_color.rgb = grid_color
+        ln.line.fill.background()
+        # Set ~2.5% opacity via XML
+        sp = ln._element.spPr
+        sf = sp.find(qn("a:solidFill"))
+        if sf is not None:
+            srgb = sf.find(qn("a:srgbClr"))
+            if srgb is not None:
+                srgb.append(srgb.makeelement(qn("a:alpha"), {"val": "2500"}))
+        x += cell
+    # Horizontal lines
+    y = Emu(0)
+    while y < SLIDE_H:
+        ln = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Emu(0), y,
+                                     SLIDE_W, line_thick)
+        ln.fill.solid()
+        ln.fill.fore_color.rgb = grid_color
+        ln.line.fill.background()
+        sp = ln._element.spPr
+        sf = sp.find(qn("a:solidFill"))
+        if sf is not None:
+            srgb = sf.find(qn("a:srgbClr"))
+            if srgb is not None:
+                srgb.append(srgb.makeelement(qn("a:alpha"), {"val": "2500"}))
+        y += cell
+
 
 def _set_rtl(paragraph, rtl=True):
     pPr = paragraph._p.get_or_add_pPr()
