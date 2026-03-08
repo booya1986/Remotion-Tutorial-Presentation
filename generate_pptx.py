@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Generate presentation.pptx from the Remotion + Claude Code HTML slideshow."""
 
+import math
+import os
+from PIL import Image, ImageDraw
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -31,11 +34,73 @@ FONT_MONO = "Consolas"
 
 # ── Helpers ────────────────────────────────────────────────────────────────
 
+BG_IMG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_slide_bg.png")
+
+
+def _generate_bg_image():
+    """Generate a PNG with the dark background, green radial blob and grid."""
+    if os.path.exists(BG_IMG_PATH):
+        return
+    # 1920×1080 at 2× would be huge; 1920×1080 is fine for pptx
+    w, h = 1920, 1080
+    img = Image.new("RGB", (w, h), (0x1B, 0x1B, 0x1B))
+
+    # ── Green radial blob ──
+    # Draw onto a separate RGBA layer, then composite
+    blob = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    cx, cy = w // 2, h // 2
+    max_r = int(math.hypot(cx, cy) * 0.7)
+    for r in range(max_r, 0, -1):
+        t = r / max_r  # 0 at centre, 1 at edge
+        if t < 0.0:
+            alpha = int(255 * 0.12)
+        elif t < 0.4:
+            # 12% → 3%
+            frac = t / 0.4
+            alpha = int(255 * (0.12 + (0.03 - 0.12) * frac))
+        elif t < 1.0:
+            # 3% → 0%
+            frac = (t - 0.4) / 0.6
+            alpha = int(255 * (0.03 * (1 - frac)))
+        else:
+            alpha = 0
+        if alpha <= 0:
+            continue
+        draw = ImageDraw.Draw(blob)
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r],
+                     fill=(0x22, 0xC5, 0x5E, alpha))
+
+    img = Image.alpha_composite(img.convert("RGBA"), blob).convert("RGB")
+
+    # ── Grid lines (40px cells, ~2.5% white opacity) ──
+    grid = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(grid)
+    cell_size = 40
+    line_alpha = int(255 * 0.025)
+    grid_col = (255, 255, 255, line_alpha)
+    for x in range(0, w, cell_size):
+        draw.line([(x, 0), (x, h)], fill=grid_col, width=1)
+    for y in range(0, h, cell_size):
+        draw.line([(0, y), (w, y)], fill=grid_col, width=1)
+
+    img = Image.alpha_composite(img.convert("RGBA"), grid).convert("RGB")
+    img.save(BG_IMG_PATH, "PNG")
+
+
 def set_slide_bg(slide, color=BG_COLOR):
+    """Set slide background to the pre-generated PNG image."""
+    _generate_bg_image()
     bg = slide.background
     fill = bg.fill
     fill.solid()
     fill.fore_color.rgb = color
+
+    # Add bg image as a full-slide picture behind everything
+    pic = slide.shapes.add_picture(BG_IMG_PATH, Emu(0), Emu(0), SLIDE_W, SLIDE_H)
+    # Send to back by moving element to be first child of spTree
+    sp_tree = slide.shapes._spTree
+    sp_tree.remove(pic._element)
+    sp_tree.insert(2, pic._element)  # after cNvGrpSpPr
 
 
 def _set_rtl(paragraph, rtl=True):
