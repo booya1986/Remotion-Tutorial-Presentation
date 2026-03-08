@@ -35,72 +35,164 @@ FONT_MONO = "Consolas"
 # ── Helpers ────────────────────────────────────────────────────────────────
 
 BG_IMG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_slide_bg.png")
+GRID_IMG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_slide_grid.png")
 
 
-def _generate_bg_image():
-    """Generate a PNG with the dark background, green radial blob and grid."""
-    if os.path.exists(BG_IMG_PATH):
-        return
-    # 1920×1080 at 2× would be huge; 1920×1080 is fine for pptx
-    w, h = 1920, 1080
-    img = Image.new("RGB", (w, h), (0x1B, 0x1B, 0x1B))
+def _generate_bg_images():
+    """Generate PNGs: base bg with green blob, and separate grid overlay."""
+    if not os.path.exists(BG_IMG_PATH):
+        w, h = 1920, 1080
+        img = Image.new("RGB", (w, h), (0x1B, 0x1B, 0x1B))
 
-    # ── Green radial blob ──
-    # Draw onto a separate RGBA layer, then composite
-    blob = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    cx, cy = w // 2, h // 2
-    max_r = int(math.hypot(cx, cy) * 0.7)
-    for r in range(max_r, 0, -1):
-        t = r / max_r  # 0 at centre, 1 at edge
-        if t < 0.0:
-            alpha = int(255 * 0.20)
-        elif t < 0.4:
-            # 20% → 6%
-            frac = t / 0.4
-            alpha = int(255 * (0.20 + (0.06 - 0.20) * frac))
-        elif t < 1.0:
-            # 6% → 0%
-            frac = (t - 0.4) / 0.6
-            alpha = int(255 * (0.06 * (1 - frac)))
-        else:
-            alpha = 0
-        if alpha <= 0:
-            continue
-        draw = ImageDraw.Draw(blob)
-        draw.ellipse([cx - r, cy - r, cx + r, cy + r],
-                     fill=(0x22, 0xC5, 0x5E, alpha))
+        # ── Green radial blob ──
+        blob = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        cx, cy = w // 2, h // 2
+        max_r = int(math.hypot(cx, cy) * 0.7)
+        for r in range(max_r, 0, -1):
+            t = r / max_r
+            if t < 0.0:
+                alpha = int(255 * 0.20)
+            elif t < 0.4:
+                frac = t / 0.4
+                alpha = int(255 * (0.20 + (0.06 - 0.20) * frac))
+            elif t < 1.0:
+                frac = (t - 0.4) / 0.6
+                alpha = int(255 * (0.06 * (1 - frac)))
+            else:
+                alpha = 0
+            if alpha <= 0:
+                continue
+            draw = ImageDraw.Draw(blob)
+            draw.ellipse([cx - r, cy - r, cx + r, cy + r],
+                         fill=(0x22, 0xC5, 0x5E, alpha))
 
-    img = Image.alpha_composite(img.convert("RGBA"), blob).convert("RGB")
+        img = Image.alpha_composite(img.convert("RGBA"), blob).convert("RGB")
+        img.save(BG_IMG_PATH, "PNG")
 
-    # ── Grid lines (40px cells, ~2.5% white opacity) ──
-    grid = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(grid)
-    cell_size = 40
-    line_alpha = int(255 * 0.05)
-    grid_col = (255, 255, 255, line_alpha)
-    for x in range(0, w, cell_size):
-        draw.line([(x, 0), (x, h)], fill=grid_col, width=1)
-    for y in range(0, h, cell_size):
-        draw.line([(0, y), (w, y)], fill=grid_col, width=1)
+    if not os.path.exists(GRID_IMG_PATH):
+        # Grid image is 20% larger than slide so the drift animation
+        # doesn't reveal blank edges
+        gw, gh = 2304, 1296
+        grid = Image.new("RGBA", (gw, gh), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(grid)
+        cell_size = 40
+        line_alpha = int(255 * 0.09)
+        grid_col = (255, 255, 255, line_alpha)
+        for x in range(0, gw, cell_size):
+            draw.line([(x, 0), (x, gh)], fill=grid_col, width=1)
+        for y in range(0, gh, cell_size):
+            draw.line([(0, y), (gw, y)], fill=grid_col, width=1)
+        grid.save(GRID_IMG_PATH, "PNG")
 
-    img = Image.alpha_composite(img.convert("RGBA"), grid).convert("RGB")
-    img.save(BG_IMG_PATH, "PNG")
+
+def _add_grid_drift_animation(slide, pic_element):
+    """Add a slow infinite diagonal drift motion-path animation to the grid."""
+    # We need to add animation XML to the slide's timing tree.
+    # The motion path moves the grid gently so it appears alive.
+    sld = slide._element
+    ns = "http://schemas.openxmlformats.org/presentationml/2006/main"
+    ans = "http://schemas.openxmlformats.org/drawingml/2006/main"
+    pns = "http://schemas.microsoft.com/office/powerpoint/2010/main"
+
+    nv = pic_element.find(qn("p:nvPicPr"))
+    sp_id = nv.find(qn("p:cNvPr")).get("id")
+
+    # Build timing XML for an infinite, auto-starting motion path
+    timing_xml = f'''<p:timing xmlns:p="{ns}"
+        xmlns:a="{ans}">
+      <p:tnLst>
+        <p:par>
+          <p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot">
+            <p:childTnLst>
+              <p:seq concurrent="1" nextAc="seek">
+                <p:cTn id="2" dur="indefinite" nodeType="mainSeq">
+                  <p:childTnLst>
+                    <p:par>
+                      <p:cTn id="3" fill="hold">
+                        <p:stCondLst>
+                          <p:cond delay="0"/>
+                        </p:stCondLst>
+                        <p:childTnLst>
+                          <p:par>
+                            <p:cTn id="4" fill="hold">
+                              <p:stCondLst>
+                                <p:cond delay="0"/>
+                              </p:stCondLst>
+                              <p:childTnLst>
+                                <p:animMotion origin="layout" path="M 0 0 L 0.03 0.03" pathEditMode="relative"
+                                    ptsTypes="AA" rAng="0">
+                                  <p:cBhvr>
+                                    <p:cTn id="5" dur="8000" repeatCount="indefinite" autoRev="1" fill="hold">
+                                      <p:stCondLst>
+                                        <p:cond delay="0"/>
+                                      </p:stCondLst>
+                                    </p:cTn>
+                                    <p:tgtEl>
+                                      <p:spTgt spid="{sp_id}"/>
+                                    </p:tgtEl>
+                                  </p:cBhvr>
+                                </p:animMotion>
+                              </p:childTnLst>
+                            </p:cTn>
+                          </p:par>
+                        </p:childTnLst>
+                      </p:cTn>
+                    </p:par>
+                  </p:childTnLst>
+                </p:cTn>
+                <p:prevCondLst>
+                  <p:cond evt="onPrev" delay="0">
+                    <p:tgtEl><p:sldTgt/></p:tgtEl>
+                  </p:cond>
+                </p:prevCondLst>
+                <p:nextCondLst>
+                  <p:cond evt="onNext" delay="0">
+                    <p:tgtEl><p:sldTgt/></p:tgtEl>
+                  </p:cond>
+                </p:nextCondLst>
+              </p:seq>
+            </p:childTnLst>
+          </p:cTn>
+        </p:par>
+      </p:tnLst>
+    </p:timing>'''
+
+    from lxml import etree
+    timing_el = etree.fromstring(timing_xml)
+    # Remove any existing timing
+    existing = sld.find(qn("p:timing"))
+    if existing is not None:
+        sld.remove(existing)
+    sld.append(timing_el)
 
 
 def set_slide_bg(slide, color=BG_COLOR):
-    """Set slide background to the pre-generated PNG image."""
-    _generate_bg_image()
+    """Set slide background to the pre-generated PNG images with animated grid."""
+    _generate_bg_images()
     bg = slide.background
     fill = bg.fill
     fill.solid()
     fill.fore_color.rgb = color
 
-    # Add bg image as a full-slide picture behind everything
-    pic = slide.shapes.add_picture(BG_IMG_PATH, Emu(0), Emu(0), SLIDE_W, SLIDE_H)
-    # Send to back by moving element to be first child of spTree
     sp_tree = slide.shapes._spTree
+
+    # Base bg image (dark + green blob)
+    pic = slide.shapes.add_picture(BG_IMG_PATH, Emu(0), Emu(0), SLIDE_W, SLIDE_H)
     sp_tree.remove(pic._element)
-    sp_tree.insert(2, pic._element)  # after cNvGrpSpPr
+    sp_tree.insert(2, pic._element)
+
+    # Grid overlay — slightly oversized, centred, so drift doesn't show edges
+    overflow = Inches(1.5)
+    grid_pic = slide.shapes.add_picture(
+        GRID_IMG_PATH,
+        Emu(int(-overflow / 2)), Emu(int(-overflow / 2)),
+        Emu(int(SLIDE_W + overflow)), Emu(int(SLIDE_H + overflow))
+    )
+    sp_tree.remove(grid_pic._element)
+    sp_tree.insert(3, grid_pic._element)
+
+    # Animate the grid with a slow diagonal drift
+    _add_grid_drift_animation(slide, grid_pic._element)
 
 
 def _set_rtl(paragraph, rtl=True):
