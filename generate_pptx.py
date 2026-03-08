@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Generate presentation.pptx from the Remotion + Claude Code HTML slideshow."""
 
+import math
+import os
+from PIL import Image, ImageDraw
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -31,89 +34,73 @@ FONT_MONO = "Consolas"
 
 # ── Helpers ────────────────────────────────────────────────────────────────
 
+BG_IMG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_slide_bg.png")
+
+
+def _generate_bg_image():
+    """Generate a PNG with the dark background, green radial blob and grid."""
+    if os.path.exists(BG_IMG_PATH):
+        return
+    # 1920×1080 at 2× would be huge; 1920×1080 is fine for pptx
+    w, h = 1920, 1080
+    img = Image.new("RGB", (w, h), (0x1B, 0x1B, 0x1B))
+
+    # ── Green radial blob ──
+    # Draw onto a separate RGBA layer, then composite
+    blob = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    cx, cy = w // 2, h // 2
+    max_r = int(math.hypot(cx, cy) * 0.7)
+    for r in range(max_r, 0, -1):
+        t = r / max_r  # 0 at centre, 1 at edge
+        if t < 0.0:
+            alpha = int(255 * 0.12)
+        elif t < 0.4:
+            # 12% → 3%
+            frac = t / 0.4
+            alpha = int(255 * (0.12 + (0.03 - 0.12) * frac))
+        elif t < 1.0:
+            # 3% → 0%
+            frac = (t - 0.4) / 0.6
+            alpha = int(255 * (0.03 * (1 - frac)))
+        else:
+            alpha = 0
+        if alpha <= 0:
+            continue
+        draw = ImageDraw.Draw(blob)
+        draw.ellipse([cx - r, cy - r, cx + r, cy + r],
+                     fill=(0x22, 0xC5, 0x5E, alpha))
+
+    img = Image.alpha_composite(img.convert("RGBA"), blob).convert("RGB")
+
+    # ── Grid lines (40px cells, ~2.5% white opacity) ──
+    grid = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(grid)
+    cell_size = 40
+    line_alpha = int(255 * 0.025)
+    grid_col = (255, 255, 255, line_alpha)
+    for x in range(0, w, cell_size):
+        draw.line([(x, 0), (x, h)], fill=grid_col, width=1)
+    for y in range(0, h, cell_size):
+        draw.line([(0, y), (w, y)], fill=grid_col, width=1)
+
+    img = Image.alpha_composite(img.convert("RGBA"), grid).convert("RGB")
+    img.save(BG_IMG_PATH, "PNG")
+
+
 def set_slide_bg(slide, color=BG_COLOR):
+    """Set slide background to the pre-generated PNG image."""
+    _generate_bg_image()
     bg = slide.background
     fill = bg.fill
     fill.solid()
     fill.fore_color.rgb = color
 
-    # ── Green radial blob (centred ellipse, ~12% green fading out) ──
-    blob_w = Emu(int(SLIDE_W * 0.7))
-    blob_h = Emu(int(SLIDE_H * 0.7))
-    blob_x = Emu(int((SLIDE_W - blob_w) / 2))
-    blob_y = Emu(int((SLIDE_H - blob_h) / 2))
-    blob = slide.shapes.add_shape(MSO_SHAPE.OVAL, blob_x, blob_y, blob_w, blob_h)
-    blob.line.fill.background()
-    # Gradient fill: green centre → transparent edge
-    fill_el = blob._element.spPr
-    # Remove default solid fill
-    for sf in fill_el.findall(qn("a:solidFill")):
-        fill_el.remove(sf)
-    grad = fill_el.makeelement(qn("a:gradFill"), {"rotWithShape": "1"})
-    gs_lst = grad.makeelement(qn("a:gsLst"), {})
-    # Stop 0%: green 12% opacity
-    gs0 = gs_lst.makeelement(qn("a:gs"), {"pos": "0"})
-    srgb0 = gs0.makeelement(qn("a:srgbClr"), {"val": "22C55E"})
-    srgb0.append(srgb0.makeelement(qn("a:alpha"), {"val": "12000"}))
-    gs0.append(srgb0)
-    gs_lst.append(gs0)
-    # Stop 40%: green 3% opacity
-    gs1 = gs_lst.makeelement(qn("a:gs"), {"pos": "40000"})
-    srgb1 = gs1.makeelement(qn("a:srgbClr"), {"val": "22C55E"})
-    srgb1.append(srgb1.makeelement(qn("a:alpha"), {"val": "3000"}))
-    gs1.append(srgb1)
-    gs_lst.append(gs1)
-    # Stop 100%: fully transparent
-    gs2 = gs_lst.makeelement(qn("a:gs"), {"pos": "100000"})
-    srgb2 = gs2.makeelement(qn("a:srgbClr"), {"val": "1B1B1B"})
-    srgb2.append(srgb2.makeelement(qn("a:alpha"), {"val": "0"}))
-    gs2.append(srgb2)
-    gs_lst.append(gs2)
-    grad.append(gs_lst)
-    # Path type = circle (radial)
-    path = grad.makeelement(qn("a:path"), {"path": "circle"})
-    fill_to_rect = path.makeelement(qn("a:fillToRect"),
-                                     {"l": "50000", "t": "50000",
-                                      "r": "50000", "b": "50000"})
-    path.append(fill_to_rect)
-    grad.append(path)
-    fill_el.append(grad)
-
-    # ── Grid lines (faint white stripes, 40px ≈ 0.42in cells) ──
-    cell = Inches(0.42)
-    line_thick = Emu(int(Pt(0.5)))
-    grid_color = RGBColor(0xFF, 0xFF, 0xFF)
-    # Vertical lines
-    x = Emu(0)
-    while x < SLIDE_W:
-        ln = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, Emu(0),
-                                     line_thick, SLIDE_H)
-        ln.fill.solid()
-        ln.fill.fore_color.rgb = grid_color
-        ln.line.fill.background()
-        # Set ~2.5% opacity via XML
-        sp = ln._element.spPr
-        sf = sp.find(qn("a:solidFill"))
-        if sf is not None:
-            srgb = sf.find(qn("a:srgbClr"))
-            if srgb is not None:
-                srgb.append(srgb.makeelement(qn("a:alpha"), {"val": "2500"}))
-        x += cell
-    # Horizontal lines
-    y = Emu(0)
-    while y < SLIDE_H:
-        ln = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Emu(0), y,
-                                     SLIDE_W, line_thick)
-        ln.fill.solid()
-        ln.fill.fore_color.rgb = grid_color
-        ln.line.fill.background()
-        sp = ln._element.spPr
-        sf = sp.find(qn("a:solidFill"))
-        if sf is not None:
-            srgb = sf.find(qn("a:srgbClr"))
-            if srgb is not None:
-                srgb.append(srgb.makeelement(qn("a:alpha"), {"val": "2500"}))
-        y += cell
+    # Add bg image as a full-slide picture behind everything
+    pic = slide.shapes.add_picture(BG_IMG_PATH, Emu(0), Emu(0), SLIDE_W, SLIDE_H)
+    # Send to back by moving element to be first child of spTree
+    sp_tree = slide.shapes._spTree
+    sp_tree.remove(pic._element)
+    sp_tree.insert(2, pic._element)  # after cNvGrpSpPr
 
 
 def _set_rtl(paragraph, rtl=True):
