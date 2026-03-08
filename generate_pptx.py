@@ -53,15 +53,15 @@ def _generate_bg_image():
     for r in range(max_r, 0, -1):
         t = r / max_r  # 0 at centre, 1 at edge
         if t < 0.0:
-            alpha = int(255 * 0.12)
+            alpha = int(255 * 0.20)
         elif t < 0.4:
-            # 12% → 3%
+            # 20% → 6%
             frac = t / 0.4
-            alpha = int(255 * (0.12 + (0.03 - 0.12) * frac))
+            alpha = int(255 * (0.20 + (0.06 - 0.20) * frac))
         elif t < 1.0:
-            # 3% → 0%
+            # 6% → 0%
             frac = (t - 0.4) / 0.6
-            alpha = int(255 * (0.03 * (1 - frac)))
+            alpha = int(255 * (0.06 * (1 - frac)))
         else:
             alpha = 0
         if alpha <= 0:
@@ -76,7 +76,7 @@ def _generate_bg_image():
     grid = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     draw = ImageDraw.Draw(grid)
     cell_size = 40
-    line_alpha = int(255 * 0.025)
+    line_alpha = int(255 * 0.05)
     grid_col = (255, 255, 255, line_alpha)
     for x in range(0, w, cell_size):
         draw.line([(x, 0), (x, h)], fill=grid_col, width=1)
