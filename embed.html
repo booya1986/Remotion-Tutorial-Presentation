@@ -1576,169 +1576,6 @@
             .solution-panels { width: 90%; height: 32vh; }
         }
 
-        /* ── Portrait mobile — fill full screen, content uses all height ── */
-        @media (max-aspect-ratio: 4/3) {
-            /* Fill the entire viewport — no aspect-ratio constraint */
-            .slideshow {
-                aspect-ratio: auto;
-                width: 100vw;
-                height: 100vh;
-                height: 100dvh;
-                max-width: 100vw;
-                max-height: 100dvh;
-            }
-
-            /* Slides fill full height, content centered & spread */
-            .slide {
-                justify-content: center;
-                padding: 24px 20px 50px;
-                gap: 3vh;
-            }
-
-            /* Navigation */
-            .nav-buttons { display: none; }
-            .keyboard-hint { display: none; }
-            .dot-nav { bottom: 10px; gap: 6px; padding: 6px 12px; }
-            .dot { width: 8px; height: 8px; min-width: 8px; }
-            .dot.active { width: 20px; }
-
-            /* Global typography — scale up for tall screens */
-            .slide h1 { font-size: clamp(1.6rem, 6vw, 2.8rem); margin-bottom: 2vh; }
-            .slide p { font-size: clamp(1rem, 4vw, 1.3rem); max-width: 100%; }
-            .slide-number { font-size: 0.85rem; margin-bottom: 1.5vh; }
-
-            /* ── SLIDE 1: Title ── */
-            .slide[data-layout="title"] h1 { font-size: clamp(1.8rem, 7vw, 3rem); }
-            .slide[data-layout="title"] .title-sub { font-size: clamp(1.1rem, 4vw, 1.4rem); max-width: 100%; }
-            .title-cta { padding: 12px 24px; font-size: 0.95rem; }
-
-            /* ── SLIDE 2: Code-to-Video — vertical, panels fill height ── */
-            .slide[data-layout="code-to-video"] {
-                flex-direction: column;
-                padding: 20px 16px 50px;
-                gap: 2vh;
-                direction: ltr;
-            }
-            .ctv-panel { width: 100%; flex: 1; min-height: 0; }
-            .ctv-code { padding-right: 0; }
-            .ctv-video { padding-left: 0; }
-            .ctv-terminal { width: 100%; height: 100%; }
-            .ctv-video-wrap { width: 100%; height: 100%; }
-            .ctv-terminal-body { height: 100%; max-height: none; overflow-y: auto; }
-            .ctv-connector { width: 60px; height: 24px; flex: none; transform: rotate(90deg); }
-            .ctv-frames { height: 100%; }
-            .code-line { font-size: 0.75rem; white-space: pre-wrap; }
-
-            /* ── SLIDE 3: Problem — text on top, timeline fills bottom ── */
-            .slide[data-layout="problem"] {
-                flex-direction: column;
-                padding: 20px 20px 50px;
-                gap: 3vh;
-            }
-            .problem-content {
-                max-width: 100%;
-                align-items: center;
-                flex: 0 0 auto;
-            }
-            .problem-content h1,
-            .problem-content .slide-number,
-            .slide[data-layout="problem"] .problem-subtitle,
-            .slide[data-layout="problem"] .problem-desc {
-                text-align: center;
-            }
-            .tl-visual-wrap {
-                width: 100%;
-                max-width: 100%;
-                flex: 1;
-                min-height: 0;
-            }
-
-            /* ── SLIDE 4: Solution — panels stack & fill ── */
-            .slide[data-layout="solution"] { padding: 20px 16px 50px; gap: 2vh; }
-            .solution-panels {
-                width: 100%;
-                flex: 1;
-                min-height: 0;
-                flex-direction: column;
-                gap: 2vh;
-                height: auto;
-            }
-            .sol-code-wrap, .sol-video-wrap {
-                flex: 1;
-                width: 100%;
-                min-height: 0;
-                max-height: none;
-            }
-            .sol-line { font-size: 0.7rem; }
-            .solution-header h1 { font-size: clamp(1.4rem, 5.5vw, 2.2rem); }
-            .solution-sub { font-size: clamp(1rem, 3.5vw, 1.2rem); }
-            .slide[data-layout="solution"] .solution-desc { font-size: clamp(0.85rem, 3vw, 1rem); }
-
-            /* ── SLIDE 5: Showcase — 2-col grid fills height ── */
-            .slide[data-layout="showcase"] { padding: 20px 16px 50px; gap: 2vh; }
-            .showcase-grid {
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: 1fr 1fr;
-                gap: 2.5vw;
-                width: 100%;
-                flex: 1;
-                min-height: 0;
-            }
-            .showcase-text-area { margin-bottom: 1vh; }
-            .sc-card { padding: 12px; gap: 8px; min-height: 0; }
-            .sc-label { font-size: 0.8rem; }
-            .showcase-bottom { font-size: clamp(0.9rem, 3.5vw, 1.1rem); margin-top: 1.5vh; }
-            .showcase-grid .sc-card:nth-child(5) { display: none; }
-
-            /* ── SLIDE 6: Pipeline — vertical, fills height ── */
-            .slide[data-layout="pipeline"] { padding: 20px 16px 50px; gap: 2vh; }
-            .slide[data-layout="pipeline"] h1 { font-size: clamp(1.4rem, 5.5vw, 2rem); }
-            .pipeline-flow {
-                flex-direction: column;
-                gap: 0;
-                flex: 1;
-                min-height: 0;
-                justify-content: center;
-            }
-            .pipe-step { width: 100%; }
-            .pipe-box { width: 80%; max-width: 280px; padding: 2vh 14px; }
-            .pipe-arrow { width: 2px; height: 2.5vh; transform: rotate(90deg); }
-            .pipe-desc { max-width: 260px; }
-            .pipe-icon { width: 44px; height: 44px; }
-            .pipe-name { font-size: 0.9rem; }
-            .pipeline-note { font-size: clamp(0.9rem, 3.5vw, 1.1rem); }
-
-            /* ── SLIDE 7: Terminal — fills height ── */
-            .slide[data-layout="claude-terminal"] { padding: 20px 14px 50px; gap: 2vh; }
-            .slide[data-layout="claude-terminal"] h1 { font-size: clamp(1.4rem, 5.5vw, 1.8rem); }
-            .ct-layout { flex-direction: column; width: 100%; flex: 1; min-height: 0; }
-            .ct-body { flex: 1; height: auto; min-height: 0; font-size: 0.75rem; padding: 14px; }
-            .ct-files { display: none; }
-
-            /* ── SLIDE 8: Skills — fills height ── */
-            .slide[data-layout="skills-install"] { padding: 20px 16px 50px; gap: 2.5vh; }
-            .slide[data-layout="skills-install"] h1 { font-size: clamp(1.4rem, 5.5vw, 1.8rem); }
-            .ski-wrap { width: 100%; }
-            .ski-name { font-size: 0.85rem; }
-            .ski-pct { font-size: 0.85rem; }
-            .ski-icons { gap: 10px; flex: 1; align-content: center; }
-            .ski-icon-pill { padding: 10px 16px; font-size: 0.9rem; }
-            .ski-note { font-size: clamp(0.9rem, 3.5vw, 1.1rem); }
-            .ski-gh-link { font-size: 0.8rem; }
-
-            /* ── SLIDE 9: Checklist — fills height ── */
-            .slide[data-layout="checklist-anim"] { padding: 20px 16px 50px; gap: 2.5vh; }
-            .slide[data-layout="checklist-anim"] h1 { font-size: clamp(1.4rem, 5.5vw, 1.8rem); }
-            .anim-checklist { width: 100%; gap: 1.5vh; flex: 1; min-height: 0; justify-content: center; }
-            .acl-item { padding: 1.5vh 14px; gap: 14px; }
-            .acl-check { width: 28px; height: 28px; }
-            .acl-text { font-size: 0.95rem; }
-            .acl-bottom { font-size: 1.05rem; }
-
-            /* ── SLIDE 10: Demo transition ── */
-            .slide[data-layout="demo-transition"] h1 { font-size: clamp(1.6rem, 6vw, 2.4rem); }
-        }
-
         /* ── Problem Slide ── */
         .slide[data-layout="problem"] {
             flex-direction: row;
@@ -2954,6 +2791,170 @@
             font-weight: 700;
             color: #22C55E;
             text-align: center;
+        }
+
+        /* ── Portrait mobile — fill full screen, content uses all height ── */
+        /* MUST be last so it overrides all base slide styles above */
+        @media (max-aspect-ratio: 4/3) {
+            /* Fill the entire viewport */
+            .slideshow {
+                aspect-ratio: auto;
+                width: 100vw;
+                height: 100vh;
+                height: 100dvh;
+                max-width: 100vw;
+                max-height: 100dvh;
+            }
+
+            /* Slides fill full height, content centered & spread */
+            .slide {
+                justify-content: center;
+                padding: 24px 20px 50px;
+                gap: 3vh;
+            }
+
+            /* Navigation */
+            .nav-buttons { display: none; }
+            .keyboard-hint { display: none; }
+            .dot-nav { bottom: 10px; gap: 6px; padding: 6px 12px; }
+            .dot { width: 8px; height: 8px; min-width: 8px; }
+            .dot.active { width: 20px; }
+
+            /* Global typography — scale up for tall screens */
+            .slide h1 { font-size: clamp(1.6rem, 6vw, 2.8rem); margin-bottom: 2vh; }
+            .slide p { font-size: clamp(1rem, 4vw, 1.3rem); max-width: 100%; }
+            .slide-number { font-size: 0.85rem; margin-bottom: 1.5vh; }
+
+            /* ── SLIDE 1: Title ── */
+            .slide[data-layout="title"] h1 { font-size: clamp(1.8rem, 7vw, 3rem); }
+            .slide[data-layout="title"] .title-sub { font-size: clamp(1.1rem, 4vw, 1.4rem); max-width: 100%; }
+            .title-cta { padding: 12px 24px; font-size: 0.95rem; }
+
+            /* ── SLIDE 2: Code-to-Video — vertical, panels fill height ── */
+            .slide[data-layout="code-to-video"] {
+                flex-direction: column;
+                padding: 20px 16px 50px;
+                gap: 2vh;
+                direction: ltr;
+            }
+            .ctv-panel { width: 100%; flex: 1; min-height: 0; }
+            .ctv-code { padding-right: 0; }
+            .ctv-video { padding-left: 0; }
+            .ctv-terminal { width: 100%; height: 100%; }
+            .ctv-video-wrap { width: 100%; height: 100%; }
+            .ctv-terminal-body { height: 100%; max-height: none; overflow-y: auto; }
+            .ctv-connector { width: 60px; height: 24px; flex: none; transform: rotate(90deg); }
+            .ctv-frames { height: 100%; }
+            .code-line { font-size: 0.75rem; white-space: pre-wrap; }
+
+            /* ── SLIDE 3: Problem — text on top, timeline fills bottom ── */
+            .slide[data-layout="problem"] {
+                flex-direction: column;
+                padding: 20px 20px 50px;
+                gap: 3vh;
+            }
+            .problem-content {
+                max-width: 100%;
+                align-items: center;
+                flex: 0 0 auto;
+            }
+            .problem-content h1,
+            .problem-content .slide-number,
+            .slide[data-layout="problem"] .problem-subtitle,
+            .slide[data-layout="problem"] .problem-desc {
+                text-align: center;
+            }
+            .tl-visual-wrap {
+                width: 100%;
+                max-width: 100%;
+                flex: 1;
+                min-height: 0;
+            }
+
+            /* ── SLIDE 4: Solution — panels stack & fill ── */
+            .slide[data-layout="solution"] { padding: 20px 16px 50px; gap: 2vh; }
+            .solution-panels {
+                width: 100%;
+                flex: 1;
+                min-height: 0;
+                flex-direction: column;
+                gap: 2vh;
+                height: auto;
+            }
+            .sol-code-wrap, .sol-video-wrap {
+                flex: 1;
+                width: 100%;
+                min-height: 0;
+                max-height: none;
+            }
+            .sol-line { font-size: 0.7rem; }
+            .solution-header h1 { font-size: clamp(1.4rem, 5.5vw, 2.2rem); }
+            .solution-sub { font-size: clamp(1rem, 3.5vw, 1.2rem); }
+            .slide[data-layout="solution"] .solution-desc { font-size: clamp(0.85rem, 3vw, 1rem); }
+
+            /* ── SLIDE 5: Showcase — 2-col grid fills height ── */
+            .slide[data-layout="showcase"] { padding: 20px 16px 50px; gap: 2vh; }
+            .showcase-grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: 1fr 1fr;
+                gap: 2.5vw;
+                width: 100%;
+                flex: 1;
+                min-height: 0;
+            }
+            .showcase-text-area { margin-bottom: 1vh; }
+            .sc-card { padding: 12px; gap: 8px; min-height: 0; }
+            .sc-label { font-size: 0.8rem; }
+            .showcase-bottom { font-size: clamp(0.9rem, 3.5vw, 1.1rem); margin-top: 1.5vh; }
+            .showcase-grid .sc-card:nth-child(5) { display: none; }
+
+            /* ── SLIDE 6: Pipeline — vertical, fills height ── */
+            .slide[data-layout="pipeline"] { padding: 20px 16px 50px; gap: 2vh; }
+            .slide[data-layout="pipeline"] h1 { font-size: clamp(1.4rem, 5.5vw, 2rem); }
+            .pipeline-flow {
+                flex-direction: column;
+                gap: 0;
+                flex: 1;
+                min-height: 0;
+                justify-content: center;
+            }
+            .pipe-step { width: 100%; }
+            .pipe-box { width: 80%; max-width: 280px; padding: 2vh 14px; }
+            .pipe-arrow { width: 2px; height: 2.5vh; transform: rotate(90deg); }
+            .pipe-desc { max-width: 260px; }
+            .pipe-icon { width: 44px; height: 44px; }
+            .pipe-name { font-size: 0.9rem; }
+            .pipeline-note { font-size: clamp(0.9rem, 3.5vw, 1.1rem); }
+
+            /* ── SLIDE 7: Terminal — fills height ── */
+            .slide[data-layout="claude-terminal"] { padding: 20px 14px 50px; gap: 2vh; }
+            .slide[data-layout="claude-terminal"] h1 { font-size: clamp(1.4rem, 5.5vw, 1.8rem); }
+            .ct-layout { flex-direction: column; width: 100%; flex: 1; min-height: 0; }
+            .ct-body { flex: 1; height: auto; min-height: 0; font-size: 0.75rem; padding: 14px; }
+            .ct-files { display: none; }
+
+            /* ── SLIDE 8: Skills — fills height ── */
+            .slide[data-layout="skills-install"] { padding: 20px 16px 50px; gap: 2.5vh; }
+            .slide[data-layout="skills-install"] h1 { font-size: clamp(1.4rem, 5.5vw, 1.8rem); }
+            .ski-wrap { width: 100%; }
+            .ski-name { font-size: 0.85rem; }
+            .ski-pct { font-size: 0.85rem; }
+            .ski-icons { gap: 10px; flex: 1; align-content: center; }
+            .ski-icon-pill { padding: 10px 16px; font-size: 0.9rem; }
+            .ski-note { font-size: clamp(0.9rem, 3.5vw, 1.1rem); }
+            .ski-gh-link { font-size: 0.8rem; }
+
+            /* ── SLIDE 9: Checklist — fills height ── */
+            .slide[data-layout="checklist-anim"] { padding: 20px 16px 50px; gap: 2.5vh; }
+            .slide[data-layout="checklist-anim"] h1 { font-size: clamp(1.4rem, 5.5vw, 1.8rem); }
+            .anim-checklist { width: 100%; gap: 1.5vh; flex: 1; min-height: 0; justify-content: center; }
+            .acl-item { padding: 1.5vh 14px; gap: 14px; }
+            .acl-check { width: 28px; height: 28px; }
+            .acl-text { font-size: 0.95rem; }
+            .acl-bottom { font-size: 1.05rem; }
+
+            /* ── SLIDE 10: Demo transition ── */
+            .slide[data-layout="demo-transition"] h1 { font-size: clamp(1.6rem, 6vw, 2.4rem); }
         }
 
     </style>
