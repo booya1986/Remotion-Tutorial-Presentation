@@ -4,6 +4,8 @@ A Hebrew RTL slideshow presenting how to build programmatic videos using [Remoti
 
 **[View the presentation live](https://booya1986.github.io/Remotion-Tutorial-Presentation/)**
 
+**[View the embeddable version](https://booya1986.github.io/Remotion-Tutorial-Presentation/embed.html)**
+
 ## Quick Start
 
 Open `index.html` in any modern browser — no build step or server required.
@@ -14,12 +16,23 @@ open index.html
 
 Navigate with arrow keys (← →), click the side arrows, or use the dot nav at the bottom.
 
+### Embed in WordPress / Blog
+
+Use `embed.html` — a mobile-friendly version with no video dependency:
+
+```html
+<iframe src="https://booya1986.github.io/Remotion-Tutorial-Presentation/embed.html" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen></iframe>
+```
+
 ## What's Inside
 
 | File | Description |
 |------|-------------|
 | `index.html` | The entire presentation — HTML, CSS, and JS in a single file |
+| `embed.html` | Mobile-friendly embeddable version (no video dependency) |
 | `matrix-clip.mp4` | 15-second Matrix clip used in the skills slide animation |
+| `generate_pptx.py` | Python script to generate PowerPoint export |
+| `presentation.pptx` | Generated PowerPoint version of the slides |
 | `CLAUDE.md` | Development context for Claude Code |
 
 ## Slides
@@ -41,7 +54,8 @@ Navigate with arrow keys (← →), click the side arrows, or use the dot nav at
 - Hebrew RTL (`dir="rtl"`) with LTR overrides for code panels
 - CSS animations + JS `MutationObserver` loops for per-slide effects
 - Canvas-based Matrix digital rain effect
-- Local `<video>` playback for the Matrix clip
+- Local `<video>` playback for the Matrix clip (desktop version)
+- Responsive embed version with 3 breakpoints (900px / 600px / 400px)
 
 ## License
 
