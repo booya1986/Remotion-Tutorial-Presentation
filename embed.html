@@ -35,17 +35,17 @@
             justify-content: center;
         }
 
-        /* ── Slide Container ── */
+        /* ── Slide Container (mobile-first: full viewport) ── */
         .slideshow {
             position: relative;
-            width: 100%;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
             max-width: 100vw;
-            aspect-ratio: 16 / 9;
-            max-height: 100vh;
             overflow: hidden;
         }
 
-        /* ── Individual Slides ── */
+        /* ── Individual Slides (mobile-first: vertical, full height) ── */
         .slide {
             position: absolute;
             inset: 0;
@@ -53,7 +53,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 80px 60px;
+            padding: 24px 20px 50px;
+            gap: 3vh;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
@@ -1576,34 +1577,34 @@
             .solution-panels { width: 90%; height: 32vh; }
         }
 
-        /* ── Problem Slide ── */
+        /* ── Problem Slide (mobile-first: vertical stack) ── */
         .slide[data-layout="problem"] {
-            flex-direction: row;
-            padding: 60px 80px 100px;
-            gap: 60px;
+            flex-direction: column;
+            padding: 20px 20px 50px;
+            gap: 3vh;
             align-items: center;
             justify-content: center;
             background: radial-gradient(ellipse at center, rgba(34, 197, 94, 0.06) 0%, transparent 60%);
         }
 
         .problem-content {
-            flex: 1;
+            flex: 0 0 auto;
             display: flex;
             flex-direction: column;
-            align-items: flex-end;
-            max-width: 420px;
+            align-items: center;
+            max-width: 100%;
             gap: 0;
         }
 
         .problem-content .slide-number {
             margin-bottom: 14px;
-            text-align: right;
+            text-align: center;
             width: 100%;
         }
 
         /* Level 1 — כותרת ראשית: גדולה, בולטת */
         .problem-content h1 {
-            text-align: right;
+            text-align: center;
             font-weight: 800;
             margin-bottom: 22px;
             width: 100%;
@@ -1619,7 +1620,7 @@
             margin-bottom: 20px;
             text-shadow: 0 0 10px rgba(34,197,94,0.35);
             line-height: 1.7;
-            text-align: right;
+            text-align: center;
             max-width: none;
             width: 100%;
             letter-spacing: 0.2px;
@@ -1631,7 +1632,7 @@
             font-weight: 300;
             color: #7a7772;
             line-height: 1.9;
-            text-align: right;
+            text-align: center;
             max-width: none;
             width: 100%;
             padding-top: 18px;
@@ -1640,8 +1641,10 @@
 
         /* Timeline Visual */
         .tl-visual-wrap {
-            flex-shrink: 0;
-            width: 480px;
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+            max-width: 100%;
             border: 1.5px solid rgba(34,197,94,0.3);
             border-radius: 12px;
             overflow: hidden;
@@ -1778,11 +1781,11 @@
             stroke-linecap: round;
         }
 
-        /* ── Solution Slide ── */
+        /* ── Solution Slide (mobile-first) ── */
         .slide[data-layout="solution"] {
             flex-direction: column;
-            padding: 56px 80px 90px;
-            gap: 34px;
+            padding: 20px 16px 50px;
+            gap: 2vh;
             align-items: center;
             justify-content: center;
             background: radial-gradient(ellipse at center, rgba(34,197,94,0.08) 0%, transparent 60%);
@@ -1822,10 +1825,10 @@
 
         .solution-panels {
             display: flex;
-            gap: 16px;
-            width: 68%;
-            height: 38vh;
-            flex-shrink: 0;
+            flex-direction: column;
+            gap: 2vh;
+            width: 100%;
+            flex: 1;
             min-height: 0;
         }
 
@@ -1983,31 +1986,34 @@
             box-shadow: 0 0 20px rgba(245,158,11,0.6);
         }
 
-        /* ── Code-to-Video Slide ── */
+        /* ── Code-to-Video Slide (mobile-first: vertical) ── */
         .slide[data-layout="code-to-video"] {
-            flex-direction: row;
+            flex-direction: column;
             direction: ltr;
-            padding: 80px 80px 100px;
-            gap: 0;
+            padding: 20px 16px 50px;
+            gap: 2vh;
             align-items: center;
             justify-content: center;
         }
 
         .ctv-panel {
+            width: 100%;
             flex: 1;
+            min-height: 0;
             display: flex;
             align-items: center;
         }
 
-        .ctv-code { justify-content: flex-end; padding-right: 32px; }
-        .ctv-video { justify-content: flex-start; padding-left: 32px; }
+        .ctv-code { justify-content: center; padding-right: 0; }
+        .ctv-video { justify-content: center; padding-left: 0; }
 
         /* Terminal */
         .ctv-terminal {
             background: #0d1117;
             border: 1px solid rgba(34,197,94,0.25);
             border-radius: 12px;
-            width: 370px;
+            width: 100%;
+            max-width: 370px;
             overflow: hidden;
             box-shadow: 0 0 20px rgba(34,197,94,0.08);
         }
@@ -2085,10 +2091,12 @@
 
         /* Connector */
         .ctv-connector {
-            flex-shrink: 0;
-            width: 80px;
+            flex: none;
+            width: 60px;
+            height: 24px;
             display: flex;
             align-items: center;
+            transform: rotate(90deg);
         }
 
         .ctv-line {
@@ -2126,7 +2134,8 @@
             border: 2px solid #22C55E;
             border-radius: 12px;
             overflow: hidden;
-            width: 370px;
+            width: 100%;
+            max-width: 370px;
             box-shadow: 0 0 16px rgba(34,197,94,0.35), 0 0 40px rgba(34,197,94,0.12);
         }
 
@@ -2220,8 +2229,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 28px 48px;
+            gap: 2vh;
+            padding: 20px 16px 50px;
         }
         .slide[data-layout="showcase"] .slide-number,
         .slide[data-layout="showcase"] h1 {
@@ -2239,11 +2248,14 @@
         }
         .showcase-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 16px;
-            width: 92%;
-            max-width: 960px;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: 1fr 1fr;
+            gap: 2.5vw;
+            width: 100%;
+            flex: 1;
+            min-height: 0;
         }
+        .showcase-grid .sc-card:nth-child(5) { display: none; }
         .sc-card {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08);
@@ -2371,7 +2383,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            padding: 20px 16px 50px;
+            gap: 2vh;
         }
         .slide[data-layout="pipeline"] h1 {
             margin: 0;
@@ -2379,10 +2392,13 @@
         }
         .pipeline-flow {
             display: flex;
+            flex-direction: column;
             align-items: center;
             gap: 0;
             direction: ltr;
             justify-content: center;
+            flex: 1;
+            min-height: 0;
         }
         .pipe-step {
             display: flex;
@@ -2391,8 +2407,9 @@
             gap: 12px;
         }
         .pipe-box {
-            width: 180px;
-            padding: 30px 18px;
+            width: 80%;
+            max-width: 280px;
+            padding: 2vh 14px;
             background: rgba(255,255,255,0.04);
             border: 1.5px solid rgba(255,255,255,0.12);
             border-radius: 16px;
@@ -2422,8 +2439,8 @@
         }
         .pipe-box.pipe-lit .pipe-name { color: #22C55E; }
         .pipe-arrow {
-            width: 60px;
-            height: 2px;
+            width: 2px;
+            height: 2.5vh;
             background: rgba(255,255,255,0.1);
             position: relative;
             overflow: hidden;
@@ -2472,17 +2489,20 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            padding: 20px 14px 50px;
+            gap: 2vh;
         }
         .slide[data-layout="claude-terminal"] h1 {
             margin: 0;
         }
         .ct-layout {
             display: flex;
+            flex-direction: column;
             direction: ltr;
             gap: 16px;
-            width: 88%;
-            max-width: 880px;
+            width: 100%;
+            flex: 1;
+            min-height: 0;
             align-items: flex-start;
         }
         .ct-terminal {
@@ -2514,7 +2534,8 @@
             font-size: 0.75rem;
             line-height: 1.7;
             color: rgba(255,255,255,0.75);
-            height: 240px;
+            flex: 1;
+            min-height: 0;
             overflow: hidden;
         }
         .ct-prompt { color: #22C55E; }
@@ -2542,7 +2563,7 @@
         @keyframes ctBlink { 0%,100%{opacity:1} 50%{opacity:0} }
         .ct-files {
             flex: 0.7;
-            display: flex;
+            display: none;
             flex-direction: column;
             gap: 8px;
         }
@@ -2577,13 +2598,14 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 28px;
+            padding: 20px 16px 50px;
+            gap: 2.5vh;
         }
         .slide[data-layout="skills-install"] h1 {
             margin: 0;
         }
         .ski-wrap {
-            width: 72%;
+            width: 100%;
             max-width: 680px;
             display: flex;
             flex-direction: column;
@@ -2727,7 +2749,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 24px;
+            padding: 20px 16px 50px;
+            gap: 2.5vh;
         }
         .slide[data-layout="checklist-anim"] h1 {
             margin: 0;
@@ -2735,9 +2758,11 @@
         .anim-checklist {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            width: 72%;
-            max-width: 640px;
+            gap: 1.5vh;
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+            justify-content: center;
         }
         .acl-item {
             display: flex;
@@ -2793,168 +2818,135 @@
             text-align: center;
         }
 
-        /* ── Portrait mobile — fill full screen, content uses all height ── */
-        /* MUST be last so it overrides all base slide styles above */
-        @media (max-aspect-ratio: 4/3) {
-            /* Fill the entire viewport */
+        /* ══════════════════════════════════════════════════════════
+           DESKTOP — restore 16:9 horizontal layouts
+           Base styles above are mobile-first (vertical, full viewport)
+        ══════════════════════════════════════════════════════════ */
+        @media (min-aspect-ratio: 4/3) {
             .slideshow {
-                aspect-ratio: auto;
-                width: 100vw;
-                height: 100vh;
-                height: 100dvh;
-                max-width: 100vw;
-                max-height: 100dvh;
+                aspect-ratio: 16 / 9;
+                width: 100%;
+                height: auto;
+                max-height: 100vh;
             }
 
-            /* Slides fill full height, content centered & spread */
             .slide {
-                justify-content: center;
-                padding: 24px 20px 50px;
-                gap: 3vh;
+                padding: 80px 60px;
+                gap: 0;
             }
 
-            /* Navigation */
-            .nav-buttons { display: none; }
-            .keyboard-hint { display: none; }
-            .dot-nav { bottom: 10px; gap: 6px; padding: 6px 12px; }
-            .dot { width: 8px; height: 8px; min-width: 8px; }
-            .dot.active { width: 20px; }
+            /* Navigation — show arrows */
+            .nav-buttons { display: flex; }
 
-            /* Global typography — scale up for tall screens */
-            .slide h1 { font-size: clamp(1.6rem, 6vw, 2.8rem); margin-bottom: 2vh; }
-            .slide p { font-size: clamp(1rem, 4vw, 1.3rem); max-width: 100%; }
-            .slide-number { font-size: 0.85rem; margin-bottom: 1.5vh; }
-
-            /* ── SLIDE 1: Title ── */
-            .slide[data-layout="title"] h1 { font-size: clamp(1.8rem, 7vw, 3rem); }
-            .slide[data-layout="title"] .title-sub { font-size: clamp(1.1rem, 4vw, 1.4rem); max-width: 100%; }
-            .title-cta { padding: 12px 24px; font-size: 0.95rem; }
-
-            /* ── SLIDE 2: Code-to-Video — vertical, panels fill height ── */
-            .slide[data-layout="code-to-video"] {
-                flex-direction: column;
-                padding: 20px 16px 50px;
-                gap: 2vh;
-                direction: ltr;
-            }
-            .ctv-panel { width: 100%; flex: 1; min-height: 0; }
-            .ctv-code { padding-right: 0; }
-            .ctv-video { padding-left: 0; }
-            .ctv-terminal { width: 100%; height: 100%; }
-            .ctv-video-wrap { width: 100%; height: 100%; }
-            .ctv-terminal-body { height: 100%; max-height: none; overflow-y: auto; }
-            .ctv-connector { width: 60px; height: 24px; flex: none; transform: rotate(90deg); }
-            .ctv-frames { height: 100%; }
-            .code-line { font-size: 0.75rem; white-space: pre-wrap; }
-
-            /* ── SLIDE 3: Problem — text on top, timeline fills bottom ── */
+            /* Problem — side by side */
             .slide[data-layout="problem"] {
-                flex-direction: column;
-                padding: 20px 20px 50px;
-                gap: 3vh;
+                flex-direction: row;
+                padding: 60px 80px 100px;
+                gap: 60px;
             }
             .problem-content {
-                max-width: 100%;
-                align-items: center;
-                flex: 0 0 auto;
+                flex: 1;
+                max-width: 420px;
+                align-items: flex-end;
             }
             .problem-content h1,
-            .problem-content .slide-number,
-            .slide[data-layout="problem"] .problem-subtitle,
-            .slide[data-layout="problem"] .problem-desc {
-                text-align: center;
-            }
+            .problem-content .slide-number { text-align: right; }
+            .slide[data-layout="problem"] .problem-subtitle { text-align: right; }
+            .slide[data-layout="problem"] .problem-desc { text-align: right; }
             .tl-visual-wrap {
-                width: 100%;
-                max-width: 100%;
-                flex: 1;
-                min-height: 0;
+                flex: none;
+                width: 480px;
+                max-width: 480px;
+                min-height: auto;
             }
 
-            /* ── SLIDE 4: Solution — panels stack & fill ── */
-            .slide[data-layout="solution"] { padding: 20px 16px 50px; gap: 2vh; }
-            .solution-panels {
-                width: 100%;
-                flex: 1;
-                min-height: 0;
-                flex-direction: column;
-                gap: 2vh;
-                height: auto;
-            }
-            .sol-code-wrap, .sol-video-wrap {
-                flex: 1;
-                width: 100%;
-                min-height: 0;
-                max-height: none;
-            }
-            .sol-line { font-size: 0.7rem; }
-            .solution-header h1 { font-size: clamp(1.4rem, 5.5vw, 2.2rem); }
-            .solution-sub { font-size: clamp(1rem, 3.5vw, 1.2rem); }
-            .slide[data-layout="solution"] .solution-desc { font-size: clamp(0.85rem, 3vw, 1rem); }
-
-            /* ── SLIDE 5: Showcase — 2-col grid fills height ── */
-            .slide[data-layout="showcase"] { padding: 20px 16px 50px; gap: 2vh; }
-            .showcase-grid {
-                grid-template-columns: repeat(2, 1fr);
-                grid-template-rows: 1fr 1fr;
-                gap: 2.5vw;
-                width: 100%;
-                flex: 1;
-                min-height: 0;
-            }
-            .showcase-text-area { margin-bottom: 1vh; }
-            .sc-card { padding: 12px; gap: 8px; min-height: 0; }
-            .sc-label { font-size: 0.8rem; }
-            .showcase-bottom { font-size: clamp(0.9rem, 3.5vw, 1.1rem); margin-top: 1.5vh; }
-            .showcase-grid .sc-card:nth-child(5) { display: none; }
-
-            /* ── SLIDE 6: Pipeline — vertical, fills height ── */
-            .slide[data-layout="pipeline"] { padding: 20px 16px 50px; gap: 2vh; }
-            .slide[data-layout="pipeline"] h1 { font-size: clamp(1.4rem, 5.5vw, 2rem); }
-            .pipeline-flow {
-                flex-direction: column;
+            /* Code-to-Video — side by side */
+            .slide[data-layout="code-to-video"] {
+                flex-direction: row;
+                padding: 80px 80px 100px;
                 gap: 0;
-                flex: 1;
-                min-height: 0;
-                justify-content: center;
             }
-            .pipe-step { width: 100%; }
-            .pipe-box { width: 80%; max-width: 280px; padding: 2vh 14px; }
-            .pipe-arrow { width: 2px; height: 2.5vh; transform: rotate(90deg); }
-            .pipe-desc { max-width: 260px; }
-            .pipe-icon { width: 44px; height: 44px; }
-            .pipe-name { font-size: 0.9rem; }
-            .pipeline-note { font-size: clamp(0.9rem, 3.5vw, 1.1rem); }
+            .ctv-panel { width: auto; flex: 1; min-height: auto; }
+            .ctv-code { justify-content: flex-end; padding-right: 32px; }
+            .ctv-video { justify-content: flex-start; padding-left: 32px; }
+            .ctv-terminal { max-width: none; width: 370px; }
+            .ctv-video-wrap { max-width: none; width: 370px; }
+            .ctv-connector { width: 80px; height: auto; transform: none; }
 
-            /* ── SLIDE 7: Terminal — fills height ── */
-            .slide[data-layout="claude-terminal"] { padding: 20px 14px 50px; gap: 2vh; }
-            .slide[data-layout="claude-terminal"] h1 { font-size: clamp(1.4rem, 5.5vw, 1.8rem); }
-            .ct-layout { flex-direction: column; width: 100%; flex: 1; min-height: 0; }
-            .ct-body { flex: 1; height: auto; min-height: 0; font-size: 0.75rem; padding: 14px; }
-            .ct-files { display: none; }
+            /* Solution — wider panels, horizontal */
+            .slide[data-layout="solution"] {
+                padding: 56px 80px 90px;
+                gap: 34px;
+            }
+            .solution-panels {
+                flex-direction: row;
+                width: 68%;
+                height: 38vh;
+                flex: none;
+            }
 
-            /* ── SLIDE 8: Skills — fills height ── */
-            .slide[data-layout="skills-install"] { padding: 20px 16px 50px; gap: 2.5vh; }
-            .slide[data-layout="skills-install"] h1 { font-size: clamp(1.4rem, 5.5vw, 1.8rem); }
-            .ski-wrap { width: 100%; }
-            .ski-name { font-size: 0.85rem; }
-            .ski-pct { font-size: 0.85rem; }
-            .ski-icons { gap: 10px; flex: 1; align-content: center; }
-            .ski-icon-pill { padding: 10px 16px; font-size: 0.9rem; }
-            .ski-note { font-size: clamp(0.9rem, 3.5vw, 1.1rem); }
-            .ski-gh-link { font-size: 0.8rem; }
+            /* Showcase — 5 columns */
+            .slide[data-layout="showcase"] {
+                gap: 10px;
+                padding: 28px 48px;
+            }
+            .showcase-grid {
+                grid-template-columns: repeat(5, 1fr);
+                grid-template-rows: auto;
+                gap: 16px;
+                width: 92%;
+                max-width: 960px;
+                flex: none;
+            }
+            .showcase-grid .sc-card:nth-child(5) { display: flex; }
 
-            /* ── SLIDE 9: Checklist — fills height ── */
-            .slide[data-layout="checklist-anim"] { padding: 20px 16px 50px; gap: 2.5vh; }
-            .slide[data-layout="checklist-anim"] h1 { font-size: clamp(1.4rem, 5.5vw, 1.8rem); }
-            .anim-checklist { width: 100%; gap: 1.5vh; flex: 1; min-height: 0; justify-content: center; }
-            .acl-item { padding: 1.5vh 14px; gap: 14px; }
-            .acl-check { width: 28px; height: 28px; }
-            .acl-text { font-size: 0.95rem; }
-            .acl-bottom { font-size: 1.05rem; }
+            /* Pipeline — horizontal flow */
+            .slide[data-layout="pipeline"] {
+                gap: 20px;
+                padding: 80px 60px;
+            }
+            .pipeline-flow {
+                flex-direction: row;
+                flex: none;
+                min-height: auto;
+            }
+            .pipe-box { width: 180px; max-width: none; padding: 30px 18px; }
+            .pipe-arrow { width: 60px; height: 2px; transform: none; }
 
-            /* ── SLIDE 10: Demo transition ── */
-            .slide[data-layout="demo-transition"] h1 { font-size: clamp(1.6rem, 6vw, 2.4rem); }
+            /* Terminal — side by side with files */
+            .slide[data-layout="claude-terminal"] {
+                gap: 20px;
+                padding: 80px 60px;
+            }
+            .ct-layout {
+                flex-direction: row;
+                width: 88%;
+                max-width: 880px;
+                flex: none;
+                min-height: auto;
+            }
+            .ct-body { flex: none; height: 240px; }
+            .ct-files { display: flex; }
+
+            /* Skills — narrower */
+            .slide[data-layout="skills-install"] {
+                gap: 28px;
+                padding: 80px 60px;
+            }
+            .ski-wrap { width: 72%; }
+
+            /* Checklist — narrower */
+            .slide[data-layout="checklist-anim"] {
+                gap: 24px;
+                padding: 80px 60px;
+            }
+            .anim-checklist {
+                width: 72%;
+                max-width: 640px;
+                gap: 12px;
+                flex: none;
+                justify-content: flex-start;
+            }
         }
 
     </style>
