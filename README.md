@@ -21,7 +21,7 @@ Navigate with arrow keys (← →), click the side arrows, or use the dot nav at
 Use `embed.html` — a mobile-friendly version with no video dependency:
 
 ```html
-<iframe src="https://booya1986.github.io/Remotion-Tutorial-Presentation/embed.html" style="width:100%;aspect-ratio:16/9;border:none;" allowfullscreen></iframe>
+<iframe src="https://booya1986.github.io/Remotion-Tutorial-Presentation/embed.html" style="width:100%;height:80vh;border:none;" allowfullscreen></iframe>
 ```
 
 ## What's Inside
